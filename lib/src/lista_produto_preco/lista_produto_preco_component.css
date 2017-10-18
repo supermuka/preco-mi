@@ -1,0 +1,21 @@
+:host ::ng-deep material-expansionpanel header .primary-text {
+  font-weight: bold;
+  font-size: 120%;
+}
+
+.tablefixed {
+  table-layout:fixed;
+  width: 100%;
+}
+
+.tablehead {
+  background-color: gray;
+}
+
+.columnleft {
+  text-align: left;
+}
+
+.columnright {
+   text-align: right;
+}

@@ -1,0 +1,16 @@
+<material-fab raised (trigger)="adicionarFamilia()">
+    <material-icon icon="add"></material-icon>
+</material-fab>
+<material-fab raised (trigger)="salvarFamilia()">
+    <material-icon icon="save"></material-icon>
+</material-fab>
+
+<div  *ngFor="let fa of retornarFamilias();let i = index">
+
+    <material-input [(ngModel)]="fa.descricao" floatingLabel label="Descrição da Família"></material-input>
+
+    <material-button icon (trigger)="excluirFamilia(i)">
+        <material-icon icon="delete"></material-icon>
+    </material-button>
+
+</div>

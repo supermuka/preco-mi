@@ -1,0 +1,17 @@
+<div>
+    <material-input label="Email"
+                    type="email"
+                    autoFocus floatingLabel
+                    [(ngModel)]="eMail">
+    </material-input>
+    <br/>
+    <material-input label="Senha"
+                    type="password"
+                    floatingLabel
+                    [(ngModel)]="senha">
+    </material-input>
+    <br/>
+    <material-button raised class="red" (trigger)="entrarAutenticacao(eMail,senha)">Sign in</material-button>
+    <br/>
+    <p>{{erro}}</p>
+</div>

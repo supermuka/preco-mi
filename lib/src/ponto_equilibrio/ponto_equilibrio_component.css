@@ -1,0 +1,15 @@
+:host {
+   margin: 20px;
+}
+
+div.wrapper {
+   margin: 0 auto;
+   max-width: 800px;
+   text-align: center;
+   font-style: italic;
+}
+
+div.column {
+   float: left;
+   width: 50%;
+}

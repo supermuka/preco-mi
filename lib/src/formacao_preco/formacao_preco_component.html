@@ -1,0 +1,196 @@
+<!-- Parametros -->
+
+<material-fab raised (trigger)="salvar()">
+  <material-icon icon="save"></material-icon>
+</material-fab>
+<br/>
+<div class="panel-name">
+  <material-expansionpanel name="Atividade Principal" [showSaveCancel]="false">
+  <material-radio-group [(ngModel)]="parametro.atividadePrincipal">
+    <material-radio value="comercio" [checked]="true">Comércio</material-radio>
+    <material-radio value="industria">Indústria</material-radio>
+    <material-radio value="servicos">Serviços</material-radio>
+  </material-radio-group>
+
+  </material-expansionpanel>
+  <material-expansionpanel name="Forma Tributação" [showSaveCancel]="false">
+    <material-radio-group [(ngModel)]="parametro.formaTributacao">
+      <material-radio value="simples" [checked]="true">Simples</material-radio>
+      <material-radio value="presumido" >Lucro Presumido</material-radio>
+      <material-radio value="real" >Lucro Real</material-radio>
+    </material-radio-group>
+  </material-expansionpanel>
+
+  <material-expansionpanel name="Resultado" [showSaveCancel]="false">
+    <div class="column">
+      <material-input type="number" [(ngModel)]="resultado.faturamentoAnual" leadingText="R$" [rightAlign]="true" floatingLabel label="Faturamento Anual"></material-input>
+      <material-input type="number" [ngModel]="faturamentoMensalEstimado" leadingText="R$" [rightAlign]="true" floatingLabel label="Faturamento Mensal Estimado" [disabled]="true"></material-input>
+      <material-input type="number" [ngModel]="gastoFixoMensal" leadingText="R$" [rightAlign]="true" floatingLabel label="Gasto Fixo Mensal" [disabled]="true"></material-input>
+      <material-input type="number" [(ngModel)]="resultado.gastoVariavelMensalEstimado" leadingText="R$" [rightAlign]="true" floatingLabel label="Gasto Variável Mensal" [disabled]="true"></material-input>
+      <material-input type="number" [(ngModel)]="resultado.valorMargemContribuicaoTotal" type="percent" leadingText="%" [rightAlign]="true" floatingLabel label="Margem de Contribuição Total" [disabled]="true"></material-input>
+    </div>
+    <div class="wrapper column">
+      <canvas id="canvas" height="450" width="600"></canvas>
+    </div>
+  </material-expansionpanel>
+
+  <material-expansionpanel name="Detalhes Gasto Fixo" [showSaveCancel]="false">
+    <material-fab  raised (trigger)="adicionarGastoFixo()">
+      <material-icon icon="add"></material-icon>
+    </material-fab>
+    <div *ngFor="let gf of retornarGastosFixos();let i = index">
+
+      <material-input [(ngModel)]="gf.descricao" floatingLabel label="Descrição do Gasto"></material-input>
+      <material-input type="number" [(ngModel)]="gf.valor" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Valor do Gasto" ></material-input>
+      <material-button icon (trigger)="excluirGastoFixo(i)">
+        <material-icon icon="delete"></material-icon>
+      </material-button>
+    </div>
+  </material-expansionpanel>
+  <material-expansionpanel name="Produto" [showSaveCancel]="false">
+
+    <div class="produto-head produto-head-1">
+
+      <material-input class="pesquisaProduto" [(ngModel)]="pesquisaProduto" floatingLabel leadingGlyph="search" label="Pesquisar Produto">
+      </material-input>
+
+      <material-fab raised (trigger)="adicionarProduto()">
+        <material-icon icon="add"></material-icon>
+      </material-fab>
+
+    </div>
+
+    <br/>
+
+    <div class="produtos">
+
+      <div *ngFor="let p of retornarProdutosFiltro();let i = index">
+
+
+
+        <hr>
+
+        <div class="material-box.detail.{{p.detalhe}}">
+
+          <material-input [(ngModel)]="p.produto.codigo" floatingLabel label="Código do Produto"></material-input>
+          <material-input [(ngModel)]="p.produto.descricao" floatingLabel label="Descrição do Produto"></material-input>
+
+          <material-dropdown-select [buttonText]="p.selecioneUnidadeLabel" [selection]="p.unidadesProdutoModel" [options]="p.unidadesProdutoOptions" [popupMatchInputWidth]="true">
+
+          </material-dropdown-select>
+
+          <material-radio-group [(ngModel)]="p.produto.tipo">
+            <material-radio value="B" [checked]="true">Bem
+            </material-radio>
+            <material-radio value="S">Serviço
+            </material-radio>
+            <material-radio value="M">Mescla
+            </material-radio>
+          </material-radio-group>
+
+          <material-dropdown-select [buttonText]="p.singleSelectFamiliaLabel"
+                                    [(selection)]="p.familiaSelectModel"
+                                    [(options)]="p.familiaOptions"
+                                    [itemRenderer]="p.familiaItemRenderer">
+          </material-dropdown-select>
+
+          <material-button icon (trigger)="p.detalhe = !p.detalhe">
+            <material-icon icon="more_vert"></material-icon>
+          </material-button>
+          <material-button icon (trigger)="excluirProduto(i)">
+            <material-icon icon="delete"></material-icon>
+          </material-button>
+
+          <div *ngIf="p.detalhe">
+
+            <h4> Aquisição ou Composição do Produto </h4>
+
+            <material-checkbox [(ngModel)]="p.produto.ehComposto">Produto composto</material-checkbox>
+
+            <br/>
+
+            <div *ngIf="p.produto.ehComposto">
+
+
+              <material-input [ngModel]="p.produto.aquisicaoComponentesValorTotal" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Valor do Custo" (ngModelChange)="calcularPrecoSugerido(i);calcularGastoVariavelMensalEstimado()" [disabled]="true"></material-input>
+
+              <material-auto-suggest-input
+                      [(inputText)]="p.inputText"
+                      [filterSuggestions]="true"
+                      [popupMatchInputWidth]="true"
+                      [showClearIcon]="true"
+                      [shouldClearOnSelection]="false"
+                      [label]="'Pesquisar...'"
+                      [labelRender]="p.itemRenderer"
+                      [leadingGlyph]="'search'"
+                      [emptyPlaceholder]="'Não encontrado'"
+                      [selection]="p.produtoComponenteSelectModel"
+                      [selectionOptions]="p.produtoComponenteOptionsf()"
+                      [itemRenderer]="p.itemRenderer">
+
+              </material-auto-suggest-input>
+              <material-fab mini raised [disabled]="desabilitarAdicionarProdutoComponente(i)" (trigger)="adicionarProdutoComponente(i)">
+                  <material-icon icon="add"></material-icon>
+              </material-fab>
+
+              <div *ngFor="let pc of retornarProdutosCompostos(i);let ii = index">
+
+                <material-input [ngModel]="pc.produto.codigo" floatingLabel label="Código do Produto" [disabled]="true"></material-input>
+
+                <material-input [ngModel]="pc.produto.descricao" floatingLabel label="Descrição do Produto" [disabled]="true"></material-input>
+
+                <material-input [ngModel]="pc.produto.unidade" floatingLabel label="Unidade" [disabled]="true"></material-input>
+                <material-input [ngModel]="pc.produto.aquisicaoValorFrete+pc.produto.aquisicaoValorSeguro+pc.produto.aquisicaoValorCusto" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Valor do Frete+Seguro+Custo" [disabled]="true"></material-input>
+
+                <material-input [(ngModel)]="pc.quantidade" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Quantidade"></material-input>
+
+                <material-input [(ngModel)]="pc.aquisicaoValorTotal" type="number"  [rightAlign]="true" floatingLabel label="Valor Aquisiçao Total" [disabled]="true"></material-input>
+
+                <material-button icon (trigger)="excluirProdutoComponente(i,ii)">
+                    <material-icon icon="delete"></material-icon>
+                </material-button>
+
+              </div>
+            </div>
+
+            <div *ngIf="!p.produto.ehComposto">
+              <span *ngIf="parametro.formaTributacao != 'simples'">
+                <material-input [(ngModel)]="p.produto.aquisicaoPercIcms" type="number" trailingText="%" [rightAlign]="true" floatingLabel label="ICMS" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+                <material-input [(ngModel)]="p.produto.aquisicaoPercIpi" type="number" trailingText="%" [rightAlign]="true" floatingLabel label="IPI" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+              </span>
+              <material-input [(ngModel)]="p.produto.aquisicaoValorFrete" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Valor do Frete" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+              <material-input [(ngModel)]="p.produto.aquisicaoValorSeguro" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Valor do Seguro" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+              <material-input [(ngModel)]="p.produto.aquisicaoValorCusto" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Valor do Custo" (ngModelChange)="calcularPrecoSugerido(i);calcularGastoVariavelMensalEstimado()"></material-input>
+            </div>
+
+            <h4> Oferta do Produto </h4>
+            <span *ngIf="parametro.formaTributacao != 'simples'">
+              <material-input [(ngModel)]="p.produto.ofertaPercIpi" type="number" trailingText="%" [rightAlign]="true" floatingLabel label="ICMS" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+              <material-input [(ngModel)]="p.produto.ofertaPercIss" type="number" trailingText="%" [rightAlign]="true" floatingLabel label="IPI" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+            </span>
+            <span *ngIf="parametro.formaTributacao == 'simples'">
+              <material-input [(ngModel)]="p.produto.ofertaPercSimples" type="number" trailingText="%" [rightAlign]="true" floatingLabel label="Alíquota Simples" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+            </span>
+
+            <material-input [(ngModel)]="p.produto.ofertaPercComissao" type="number" trailingText="%" [rightAlign]="true" floatingLabel label="Comissão" (ngModelChange)="calcularPrecoSugerido(i)"></material-input>
+            <!--
+            <material-input [(ngModel)]="p.produto.ofertaPercMargemContribuicao" type="number" trailingText="%" [rightAlign]="true" floatingLabel label="Margem Contribuição" (ngModelChange)="calcularPrecoSugerido(i);calcularFaturamentoMensalEstimado()"></material-input>
+            -->
+            <material-input [(ngModel)]="p.produto.ofertaValorPrecoSugerido" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Preço Sugerido" [disabled]="true"></material-input>
+            <material-checkbox [(ngModel)]="p.copiaPrecoSugerido">Copia Preço<br/>Sugerido</material-checkbox>
+           <!--
+            <material-input [(ngModel)]="p.produto.ofertaValorPreco" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Preço" (ngModelChange)="calcularFaturamentoMensalEstimado()"></material-input>
+           -->
+            <material-input [(ngModel)]="p.produto.ofertaValorPreco" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Preço"></material-input>
+
+            <material-input [(ngModel)]="p.produto.ofertaVolumeEstimado" type="number" leadingText="R$" [rightAlign]="true" floatingLabel label="Volume Estimado" (ngModelChange)="calcularReceitaGastoVarialvelMensalEstimado()"></material-input>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </material-expansionpanel>
+</div>

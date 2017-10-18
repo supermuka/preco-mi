@@ -1,0 +1,98 @@
+<!--
+  Copyright (c) 2017, Levius.  All rights reserved.
+-->
+
+
+<div *ngIf="!estahAutenticado()">
+    <precomi-autenticacao></precomi-autenticacao>
+</div>
+
+<div *ngIf="estahAutenticado()">
+
+    <material-drawer  temporary #drawer="drawer">
+        <material-list class="menu-drawer" *deferredContent>
+            <div group class="mat-drawer-spacer"></div>
+            <div group>
+                <material-list-item (click)="drawer.toggle();definirOpcaoMenu('FORMACAO_PRECO_VENDA')">
+                    <material-icon icon="work"></material-icon>Formação de Preço
+                </material-list-item>
+                <material-list-item (click)="drawer.toggle();definirOpcaoMenu('FAMILIA')">
+                    <material-icon icon="group"></material-icon>Familia
+                </material-list-item>
+            </div>
+            <div group>
+                <div label>Estatística</div>
+                <material-list-item (click)="drawer.toggle();definirOpcaoMenu('LISTA_PRODUTO_PRECO')">
+                    <material-icon icon="filter"></material-icon>Lista de Produto e Preço
+                </material-list-item>
+            </div>
+            <div group>
+                <div label>Administração</div>
+                <material-list-item (click)="drawer.toggle();definirOpcaoMenu('EMPRESA')">
+                    <material-icon icon="filter"></material-icon>Empresa
+                </material-list-item>
+                <material-list-item (click)="drawer.toggle();definirOpcaoMenu('USUARIO')">
+                    <material-icon icon="filter"></material-icon>Usuário
+                </material-list-item>
+            </div>
+        </material-list>
+    </material-drawer>
+    <material-content>
+        <header class="material-header shadow">
+            <div class="material-header-row">
+                <material-button icon
+                                 class="material-drawer-button" (trigger)="drawer.toggle()">
+                    <material-icon icon="menu"></material-icon>
+                </material-button>
+                <span class="material-header-title">PREÇO MI - {{opcaoMenuAtualDescricao}}</span>
+                <div class="material-spacer"></div>
+
+                <nav class="material-navigation">
+
+                    <precomi-entidade></precomi-entidade>
+
+                </nav>
+                <nav class="material-navigation">
+                    <material-button dense (trigger)="sairAutenticado()">Sair</material-button>
+                </nav>
+            </div>
+        </header>
+        <div *ngIf="opcaoMenuAtual == null">
+
+            <precomi-painel></precomi-painel>
+
+            <h2>Conceitos para Formação de Preço de Venda</h2>
+            <br/>
+            <h3>Forma de Tributação</h3>
+            <h4>Simples</h4>
+            <p>Simples é uma forma de tributação mais justa...</p>
+            <h4>Lucro Presumido</h4>
+            <p>Lucro presumido é para quem tem lucro muito alto...</p>
+            <h4>Lucro Real</h4>
+            <p>Lucro real é para quem tem muita despesa e margem baixa de lucro...</p>
+            <h3>Custo</h3>
+            <h4>Custo Fixo</h4>
+            <h4>Custo Variável</h4>
+            <h3>Margem de Contribuição</h3>
+            <h3>Preço de Venda</h3>
+
+        </div>
+
+        <div *ngIf="opcaoMenuAtual == 'FORMACAO_PRECO_VENDA'">
+            <precomi-formacaopreco></precomi-formacaopreco>
+        </div>
+
+        <div *ngIf="opcaoMenuAtual == 'FAMILIA'">
+            <precomi-familia></precomi-familia>
+        </div>
+
+        <div *ngIf="opcaoMenuAtual == 'LISTA_PRODUTO_PRECO'">
+            <precomi-lista_produto_preco></precomi-lista_produto_preco>
+        </div>
+
+        <div *ngIf="opcaoMenuAtual == 'PONTO_EQUILIBRIO'">
+            <precomi-ponto-equilibrio></precomi-ponto-equilibrio>
+        </div>
+
+    </material-content>
+</div>

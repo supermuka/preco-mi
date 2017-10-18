@@ -1,0 +1,40 @@
+<!-- Parametros -->
+
+<div>
+  <material-expansionpanel name="Filtro e Ordem" [showSaveCancel]="false">
+    <material-input class="pesquisaProduto" [(ngModel)]="pesquisaProduto" floatingLabel leadingGlyph="search" label="Pesquisar Produto">
+    </material-input>
+
+    <spam>Ordenar por:</spam>
+    <material-radio-group  [(ngModel)]="ordem">
+      <material-radio value="descricao" [checked]="true">
+        Descrição
+      </material-radio >
+      <material-radio value="codigo">
+        Código
+      </material-radio >
+      <material-radio value="preco">
+        Preço
+      </material-radio>
+    </material-radio-group>
+  </material-expansionpanel>
+
+  <material-content class="tablefixed">
+    <table class="tablefixed" *ngFor="let p of retornarProdutosFiltroOrdem();let i = index">
+      <tr class="columnhead" *ngIf="i == 0">
+        <th class="columnleft">Código</th>
+        <th class="columnleft">Nome</th>
+        <th class="columnleft">Tipo</th>
+        <th class="columnleft">Família</th>
+        <th class="columnright">Preço</th>
+      </tr>
+      <tr>
+        <td class="columnleft">{{p?.codigo}}</td>
+        <td class="columnleft">{{p?.descricao}}</td>
+        <td class="columnleft">{{p?.tipoDescricao}}</td>
+        <td class="columnleft">{{p?.familia?.descricao}}</td>
+        <td class="columnright">{{p?.ofertaValorPreco | currency:'R$ '}}</td>
+      </tr>
+    </table>
+  </material-content>
+</div>
